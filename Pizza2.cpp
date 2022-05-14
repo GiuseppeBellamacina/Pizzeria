@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <limits>
 #define DIM 59
 
 using namespace std;
@@ -116,8 +117,7 @@ class Lista{
     	Lista(){testa=nullptr;}
     	Nodo* getTesta(){return testa;}
     	void inserisci(ListaC ls);
-    	Nodo* ricerca(const ListaC lista);
-    	void rimuovi(ListaC lista);
+    	Nodo* ricerca(const string cogn);
     	
     	friend
     	ostream& operator<<(ostream& out, const Lista& ls);
@@ -146,6 +146,14 @@ void Lista::inserisci(ListaC ls){
     this->testa = nuovo;
 }
 
+Nodo* Lista::ricerca(const string cogn){
+    Nodo* p;
+    for(p=this->testa; p!=nullptr; p=p->succ)
+        if(p->lista.getTesta()->c.getCognome() == cogn)
+            return p;
+    return nullptr;
+}
+
 void charge(Lista& ls, fstream& file){
 	string s, c = "";
 	while(file){
@@ -160,9 +168,33 @@ void charge(Lista& ls, fstream& file){
 	}
 }
 
+void ordXCliente(Lista& ls){
+	string s;
+	double sum = 0;
+	cout << "Inserisci nome cliente:\t";
+	cin >> s;
+	while (cin.fail()){
+		cerr << "Cosa caspita hai scritto?" << endl;
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Inserisci nome cliente:\t";
+		cin >> s;
+	}
+	if(ls.ricerca(s)){
+		Nodo* p = ls.ricerca(s);
+		NodoC* b = p->lista.getTesta();
+		cout << p->lista;
+		while(b!=nullptr){
+			sum += b->c.getPrezzo()*b->c.getQuantita();
+			b = b->succ;
+		}
+	}
+	cout << "Il totale speso da " << s << " e' di " << sum << " euro." << endl;
+}
+
 int main(){
 	fstream input("Comande.txt", fstream::in);
 	Lista l;
 	charge(l,input);
-	
+	ordXCliente(l);
 }
