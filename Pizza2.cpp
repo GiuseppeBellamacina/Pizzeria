@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <limits>
 #define DIM 59
 
 using namespace std;
@@ -106,8 +105,7 @@ ostream& operator<<(ostream& out, const ListaC& ls){
 
 class Nodo{
 	public:
-		string cliente;
-    	ListaC ls;
+    	ListaC lista;
     	Nodo* succ;
 };
 
@@ -117,7 +115,7 @@ class Lista{
 	public:
     	Lista(){testa=nullptr;}
     	Nodo* getTesta(){return testa;}
-    	void inserisci(const ListaC lista);
+    	void inserisci(ListaC ls);
     	Nodo* ricerca(const ListaC lista);
     	void rimuovi(ListaC lista);
     	
@@ -128,7 +126,7 @@ class Lista{
 ostream& operator<<(ostream& out, const Lista& ls){
     Nodo* iter = ls.testa;
     while(iter!=nullptr){
-        out << iter->cliente << endl;
+        out << iter->lista.getTesta()->c.getCognome() << endl;
         iter = iter->succ;
     }
     return out;
@@ -141,25 +139,30 @@ void ListaC::inserisci(const Comanda com){
     this->testa = nuovo;
 }
 
-void Lista::inserisci(ListaC lista){
+void Lista::inserisci(ListaC ls){
     Nodo* nuovo = new Nodo;
-    nuovo->ls = lista;
+    nuovo->lista = ls;
     nuovo->succ = this->testa;
     this->testa = nuovo;
 }
 
-void charge(ListaC& ls, fstream& file){
-	string s;
+void charge(Lista& ls, fstream& file){
+	string s, c = "";
 	while(file){
 		file >> s;
 		Comanda com(s);
-		ls.inserisci(com);
+		if(com.getCognome()!=c){
+			ListaC nuovo;
+			ls.inserisci(nuovo);
+			c = com.getCognome();
+		}
+		ls.getTesta()->lista.inserisci(com);
 	}
 }
 
 int main(){
 	fstream input("Comande.txt", fstream::in);
-	ListaC ls;
-	charge(ls,input);
-	cout << ls;
+	Lista l;
+	charge(l,input);
+	
 }
