@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// qui creo la classe per le comande
 class Comanda{
 	private:
 		string cognome;
@@ -71,16 +72,19 @@ class Comanda{
 		}
 };
 
+// creo anche un modo per stamparle
 ostream& operator<< (ostream& os, Comanda& a){
 	return a.print(os);
 }
 
+// nodo della lista minore (lista pizze per cliente)
 class NodoC{
 	public:
     	Comanda c;
     	NodoC* succ;
 };
 
+// lista pizze per cliente
 class ListaC{
 	private:
     	NodoC* testa;
@@ -88,13 +92,12 @@ class ListaC{
     	ListaC(){testa=nullptr;}
     	NodoC* getTesta(){return testa;}
     	void inserisci(const Comanda com);
-    	NodoC* ricerca(const Comanda com);
-    	void rimuovi(Comanda com);
     	
     	friend
     	ostream& operator<<(ostream& out, const ListaC& ls);
 };
 
+// così mi stampa tutte le pizze dei singoli clienti (necessario l'overloading<< della classe Comanda)
 ostream& operator<<(ostream& out, const ListaC& ls){
     NodoC* iter = ls.testa;
     while(iter!=nullptr){
@@ -104,12 +107,14 @@ ostream& operator<<(ostream& out, const ListaC& ls){
     return out;
 }
 
+// nodo della lista maggiore (lista dei clienti)
 class Nodo{
 	public:
     	ListaC lista;
     	Nodo* succ;
 };
 
+// lista di liste (contiene i clienti e da loro si dirama la lista delle pizze)
 class Lista{
 	private:
     	Nodo* testa;
@@ -118,11 +123,13 @@ class Lista{
     	Nodo* getTesta(){return testa;}
     	void inserisci(ListaC ls);
     	Nodo* ricerca(const string cogn);
+    	void rimuovi(double val);
     	
     	friend
     	ostream& operator<<(ostream& out, const Lista& ls);
 };
 
+// se stampo la lista delle liste lui mi stampa la lista dei cognomi dei clienti
 ostream& operator<<(ostream& out, const Lista& ls){
     Nodo* iter = ls.testa;
     while(iter!=nullptr){
@@ -132,6 +139,7 @@ ostream& operator<<(ostream& out, const Lista& ls){
     return out;
 }
 
+// funzione per aggiungere le singole comande ad una lista minore
 void ListaC::inserisci(const Comanda com){
     NodoC* nuovo = new NodoC;
     nuovo->c = com;
@@ -139,6 +147,7 @@ void ListaC::inserisci(const Comanda com){
     this->testa = nuovo;
 }
 
+// funzione per aggiungere un nuovo cliente alla lista maggiore
 void Lista::inserisci(ListaC ls){
     Nodo* nuovo = new Nodo;
     nuovo->lista = ls;
@@ -146,15 +155,8 @@ void Lista::inserisci(ListaC ls){
     this->testa = nuovo;
 }
 
-Nodo* Lista::ricerca(const string cogn){
-    Nodo* p;
-    for(p=this->testa; p!=nullptr; p=p->succ)
-        if(p->lista.getTesta()->c.getCognome() == cogn)
-            return p;
-    return nullptr;
-}
-
-void charge(Lista& ls, fstream& file){
+// (PUNTO 1 e 2) funzione per carire i dati dal file sulla lista di liste (in modo organizzato)
+void upload(Lista& ls, fstream& file){
 	string s, c = "";
 	while(file){
 		file >> s;
@@ -165,10 +167,22 @@ void charge(Lista& ls, fstream& file){
 			c = com.getCognome();
 		}
 		ls.getTesta()->lista.inserisci(com);
+		if(file.eof()) break;
 	}
 }
 
+// (PUNTO 3) funzione di ricerca del cliente per cognome
+Nodo* Lista::ricerca(const string cogn){
+    Nodo* p;
+    for(p=this->testa; p!=nullptr; p=p->succ)
+        if(p->lista.getTesta()->c.getCognome() == cogn)
+            return p;
+    return nullptr;
+}
+
+// (PUNTO 3) funzione per stampare le ordinazioni di un dato cliente e calcolarne la spesa
 void ordXCliente(Lista& ls){
+	system("cls");
 	string s;
 	double sum = 0;
 	cout << "Inserisci nome cliente:\t";
@@ -189,12 +203,41 @@ void ordXCliente(Lista& ls){
 			b = b->succ;
 		}
 	}
+	else{
+		cout << "Il cliente non e' stato trovato, scegliere tra questi:" << endl << endl;
+		cout << ls;
+		system("pause");
+		ordXCliente(ls);
+	}
 	cout << "Il totale speso da " << s << " e' di " << sum << " euro." << endl;
+}
+
+// (PUNTO 4) funzione per rimuovere un cliente dalla lista maggiore se egli spende meno di val (la media la calcolo a parte)
+void Lista::rimuovi(double val){ // NON FUNZIONA CORRETTAMENTE
+    Nodo* prec;					 // VEDI DI SISTEMARE STO SCHIFO
+    Nodo* curr = this->testa;
+    while(curr!=nullptr){
+		NodoC* ls = curr->lista.getTesta();
+    	double sum = 0;
+    	while(ls!=nullptr){
+			sum += ls->c.getPrezzo()*ls->c.getQuantita();
+			cout << ls->c.getCognome() << endl;
+			cout << sum << endl;
+			ls = ls->succ;
+		}
+    	if(sum<val){
+        	prec = this->testa;
+        	this->testa = prec->succ;
+    	    delete prec;
+	    }
+	    curr = curr->succ;
+	}	
 }
 
 int main(){
 	fstream input("Comande.txt", fstream::in);
 	Lista l;
-	charge(l,input);
+	upload(l,input);
 	ordXCliente(l);
+	//l.rimuovi(25);
 }
