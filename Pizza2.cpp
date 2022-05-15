@@ -127,6 +127,7 @@ class Lista{
     	double getSpesa(Nodo* n);
     	double getMedia();
     	void rimuovi(Nodo* n);
+    	void classifica();
     	
     	friend
     	ostream& operator<<(ostream& out, const Lista& ls);
@@ -275,13 +276,21 @@ double Lista::getMedia(){
 	return sum/c;
 }
 
+// (PUNTO 5) funzione per la classifica
+void Lista::classifica(){
+	// si devono usare le cose per la lista ordinata, ma onestamente mi siddio ora a farlo, se ne parla dopo
+	// magari si crea una variante di lista diversa fatta per conservare i dati delle pizze ma ripeto
+	// non ho ne tempo ne voglia
+	// scherzo, non ho voglia. Appoi si ni para
+}
+
 int main(){
-	fstream input("Comande.txt", fstream::in);
-	Lista l;
-	upload(l,input);
-	Nodo* p = l.getTesta();
-	//ordXCliente(l);
-	cout << l << endl;
-	download(l,l.getMedia());
-	cout << l;
+	fstream input("Comande.txt", fstream::in); // apro il file per leggere da esso
+	Lista l; // creo una lista (quella maggiore)
+	upload(l,input); // PUNTO 1 e 2: carico i dati sulla lista
+	ordXCliente(l); // PUNTO 3: cerco le ordinazioni di un cliente, le stampo e calcolo il totale
+	system("pause");
+	download(l,l.getMedia()); // PUNTO 4: elimino dalla lista i clienti che hanno speso poco ma salvo le loro ordinazioni su file
+	
+	return 0;
 }
