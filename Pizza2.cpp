@@ -127,7 +127,6 @@ class Lista{
     	double getSpesa(Nodo* n);
     	double getMedia();
     	void rimuovi(Nodo* n);
-    	void classifica();
     	
     	friend
     	ostream& operator<<(ostream& out, const Lista& ls);
@@ -276,21 +275,96 @@ double Lista::getMedia(){
 	return sum/c;
 }
 
+// (PUNTO 5) nodo per ListaPizze per le pizze
+class NodoPizze{
+	public:
+		string pizza;
+		int qt;
+		NodoPizze* succ;
+};
+
+// (PUNTO 5) lista per le pizze
+class ListaPizze{
+	private:
+		NodoPizze* testa;
+	public:
+		ListaPizze(){testa=nullptr;}
+    	NodoPizze* getTesta(){return testa;}
+    	void inserisci(string p, int q);
+    	NodoPizze* ricerca(string pz);
+    	NodoPizze* findMax();
+    	void classifica(Lista& ls);
+};
+
+// (PUNTO 5) inserimento per ListaPizze
+void ListaPizze::inserisci(string p, int q){
+    NodoPizze* nuovo = new NodoPizze;
+    nuovo->pizza = p;
+    nuovo->qt = q;
+    nuovo->succ = this->testa;
+    this->testa = nuovo;	
+}
+
+// (PUNTO 5) ricerca nodo pizza
+NodoPizze* ListaPizze::ricerca(string pz){
+	NodoPizze* p;
+    for(p=this->testa; p!=nullptr; p=p->succ)
+        if(p->pizza == pz)
+            return p;
+    return nullptr;
+}
+
+// (PUNTO 5) ricerca pizza più ordinata
+NodoPizze* ListaPizze::findMax(){
+	NodoPizze* p;
+	NodoPizze* m;
+	int max = 0;
+    for(p=this->testa; p!=nullptr; p=p->succ){
+    	if(p->qt > max){
+        	max = p->qt;
+        	m = p;
+		}
+	}
+	if(max) return m;
+	return nullptr;
+}
+
 // (PUNTO 5) funzione per la classifica
-void Lista::classifica(){
-	// si devono usare le cose per la lista ordinata, ma onestamente mi siddio ora a farlo, se ne parla dopo
-	// magari si crea una variante di lista diversa fatta per conservare i dati delle pizze ma ripeto
-	// non ho ne tempo ne voglia
-	// scherzo, non ho voglia. Appoi si ni para
+void ListaPizze::classifica(Lista& ls){
+	for(Nodo* p=ls.getTesta(); p!=nullptr; p=p->succ){
+		for(NodoC* b=p->lista.getTesta(); b!=nullptr; b=b->succ){
+			NodoPizze* n = this->ricerca(b->c.getPizza());
+			if(n){
+				n->qt += b->c.getQuantita();
+			}
+			else{
+				this->inserisci(b->c.getPizza(),b->c.getQuantita());
+			}
+		}
+	}
+	system("cls");
+	cout << "CLASSIFICA PIZZE PIU' VENDUTE:" << endl;
+	int i = 1;
+	while(this->findMax()){
+		NodoPizze* p = this->findMax();
+		cout << i++ << ") " << p->pizza << ": " << p->qt << endl;
+		p->qt = 0;
+	}
 }
 
 int main(){
 	fstream input("Comande.txt", fstream::in); // apro il file per leggere da esso
 	Lista l; // creo una lista (quella maggiore)
-	upload(l,input); // PUNTO 1 e 2: carico i dati sulla lista
-	ordXCliente(l); // PUNTO 3: cerco le ordinazioni di un cliente, le stampo e calcolo il totale
+	// PUNTO 1 e 2: carico i dati sulla lista
+	upload(l,input);
+	// PUNTO 3: cerco le ordinazioni di un cliente, le stampo e calcolo il totale
+	ordXCliente(l);
 	system("pause");
-	download(l,l.getMedia()); // PUNTO 4: elimino dalla lista i clienti che hanno speso poco ma salvo le loro ordinazioni su file
-	
+	// PUNTO 4: elimino dalla lista i clienti che hanno speso poco ma salvo le loro ordinazioni su file
+	download(l,l.getMedia());
+	// PUNTO 5: creo una ListaPizze e avvio la funzione
+	ListaPizze ll;
+	ll.classifica(l);
+	cout << "A proposito, le ordinazioni dei clienti che hanno speso meno di " << l.getMedia() << " sono state salvate su Comande_eliminate.txt";
 	return 0;
 }
