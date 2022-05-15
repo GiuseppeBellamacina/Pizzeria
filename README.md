@@ -20,5 +20,7 @@ Comunque, qua c'è la lista dei file, anzi, facciamo le cose per come si deve
 Tena accura quando lavori in scrittura con i file, tipo per il punto 4 perchè se mai ti dovessi arrisicare a mettere un inserimento su file in un loop che non ti accorgi essere infinito, te ne pentiresti...
 No seriamente, ho creato un file .txt da 90 MB in tipo 4 secondi, poi ho bloccato tutto prima che mi esplodesse il computer.
 
+### Dico questo e basta
 Se hai dubbi, chiedi a me, magari mi ricordo perchè ho scritto in quel modo, o magari no.
+
 Un'ultima cosa, se ti chiedi come ho fatto a fare sto coso qua sotto con tutte ste scritte carine, boh, ma io che cazzo ne so scusi, ho copiato l'impostazione dal README di Ortis.
