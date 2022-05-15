@@ -126,7 +126,7 @@ class Lista{
     	Nodo* ricerca(double val);
     	double getSpesa(Nodo* n);
     	double getMedia();
-    	void rimuovi(double val);
+    	void rimuovi(Nodo* n);
     	
     	friend
     	ostream& operator<<(ostream& out, const Lista& ls);
@@ -232,33 +232,36 @@ Nodo* Lista::ricerca(double val){
     return nullptr;
 }
 
-// (PUNTO 4 BONUS) funzione per salvare su file i clienti che hanno speso meno della media
-void download(Lista& ls, fstream& file){
-	
+// (PUNTO 4) funzione per rimuovere un cliente dalla lista maggiore se egli spende meno di val (la media la calcolo a parte)
+void Lista::rimuovi(Nodo* n){
+	Nodo* prec = this->testa;
+   	if (n==nullptr)
+       	return;
+    else if(n->succ==nullptr){
+       	while(prec->succ!=n){
+       		prec = prec->succ;
+		}
+		prec->succ=nullptr;
+	}
+   	else{
+       	while (n->succ!=nullptr) {
+           	n->lista = n->succ->lista;
+           	prec = n;
+           	n = n->succ;
+       	}
+       	prec->succ = nullptr;
+    }
 }
 
-// (PUNTO 4) funzione per rimuovere un cliente dalla lista maggiore se egli spende meno di val (la media la calcolo a parte)
-void Lista::rimuovi(double val){
-	while(this->ricerca(val)){
-		Nodo* n = this->ricerca(val);
-		Nodo* prec = this->testa;
-    	if (n == nullptr)
-        	return;
-        else if(n->succ == nullptr){
-        	while(prec->succ!=n){
-        		prec = prec->succ;
-			}
-			prec->succ=nullptr;
-		}
-    	else{
-        	while (n->succ != nullptr) {
-            	n->lista = n->succ->lista;
-            	prec = n;
-            	n = n->succ;
-        	}
-        	prec->succ = nullptr;
-    	}
+// (PUNTO 4 BONUS) funzione per salvare su file i clienti che hanno speso meno della media
+void download(Lista& ls, double val){
+	fstream save("Comande_eliminate", fstream::out);
+	while(ls.ricerca(val)){
+		Nodo* n = ls.ricerca(val);
+		save << n->lista;
+		ls.rimuovi(n);
 	}
+	save.close();
 }
 
 // (PUNTO 4) funzione per la media
@@ -279,6 +282,6 @@ int main(){
 	Nodo* p = l.getTesta();
 	//ordXCliente(l);
 	cout << l << endl;
-	l.rimuovi(l.getMedia());
+	download(l,l.getMedia());
 	cout << l;
 }
