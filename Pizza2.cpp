@@ -361,10 +361,12 @@ int main(){
 	ordXCliente(l);
 	system("pause");
 	// PUNTO 4: elimino dalla lista i clienti che hanno speso poco ma salvo le loro ordinazioni su file
-	download(l,l.getMedia());
+	double media = l.getMedia();
+	download(l,media);
 	// PUNTO 5: creo una ListaPizze e avvio la funzione
 	ListaPizze ll;
 	ll.classifica(l);
-	cout << "A proposito, le ordinazioni dei clienti che hanno speso meno di " << l.getMedia() << " sono state salvate su Comande_eliminate.txt";
+	cout << "A proposito, le ordinazioni dei clienti che hanno speso meno di " << media << " sono state salvate su Comande_eliminate.txt";
+	
 	return 0;
 }
