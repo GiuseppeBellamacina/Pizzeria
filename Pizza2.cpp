@@ -123,6 +123,9 @@ class Lista{
     	Nodo* getTesta(){return testa;}
     	void inserisci(ListaC ls);
     	Nodo* ricerca(const string cogn);
+    	Nodo* ricerca(double val);
+    	double getSpesa(Nodo* n);
+    	double getMedia();
     	void rimuovi(double val);
     	
     	friend
@@ -180,6 +183,17 @@ Nodo* Lista::ricerca(const string cogn){
     return nullptr;
 }
 
+// (PUNTO 3 e 4) funzione per calcolare la spesa del singolo cliente
+double Lista::getSpesa(Nodo* n){
+	NodoC* ls = n->lista.getTesta();
+    	double sum = 0;
+    	while(ls!=nullptr){
+			sum += ls->c.getPrezzo()*ls->c.getQuantita();
+			ls = ls->succ;
+	}
+	return sum;
+}
+
 // (PUNTO 3) funzione per stampare le ordinazioni di un dato cliente e calcolarne la spesa
 void ordXCliente(Lista& ls){
 	system("cls");
@@ -196,12 +210,8 @@ void ordXCliente(Lista& ls){
 	}
 	if(ls.ricerca(s)){
 		Nodo* p = ls.ricerca(s);
-		NodoC* b = p->lista.getTesta();
 		cout << p->lista;
-		while(b!=nullptr){
-			sum += b->c.getPrezzo()*b->c.getQuantita();
-			b = b->succ;
-		}
+		sum = ls.getSpesa(p);
 	}
 	else{
 		cout << "Il cliente non e' stato trovato, scegliere tra questi:" << endl << endl;
@@ -212,32 +222,59 @@ void ordXCliente(Lista& ls){
 	cout << "Il totale speso da " << s << " e' di " << sum << " euro." << endl;
 }
 
+// (PUNTO 4) funzione di ricerca del cliente che ha speso meno di val
+Nodo* Lista::ricerca(double val){
+    Nodo* p;
+    for(p=this->testa; p!=nullptr; p=p->succ){
+        double sum = this->getSpesa(p);
+		if(sum < val) return p;
+	}
+    return nullptr;
+}
+
 // (PUNTO 4) funzione per rimuovere un cliente dalla lista maggiore se egli spende meno di val (la media la calcolo a parte)
-void Lista::rimuovi(double val){ // NON FUNZIONA CORRETTAMENTE
-    Nodo* prec;					 // VEDI DI SISTEMARE STO SCHIFO
-    Nodo* curr = this->testa;
-    while(curr!=nullptr){
-		NodoC* ls = curr->lista.getTesta();
-    	double sum = 0;
-    	while(ls!=nullptr){
-			sum += ls->c.getPrezzo()*ls->c.getQuantita();
-			cout << ls->c.getCognome() << endl;
-			cout << sum << endl;
-			ls = ls->succ;
+void Lista::rimuovi(double val){
+	Nodo* prec;
+    Nodo* curr;
+    if(this->getSpesa(this->testa)<val){
+        prec = this->testa;
+        this->testa = prec->succ;
+        delete prec;
+    }
+    else{
+		prec = this->testa;
+        curr = this->testa->succ;
+        while((curr!=nullptr)&&(this->getSpesa(this->testa)>=val)){
+			prec = prec->succ;
+        	curr = curr->succ;
+        } 
+        if(curr!=nullptr){
+			prec->succ = curr->succ;
+			delete curr;
 		}
-    	if(sum<val){
-        	prec = this->testa;
-        	this->testa = prec->succ;
-    	    delete prec;
-	    }
-	    curr = curr->succ;
-	}	
+    }
+}
+
+// (PUNTO 4) funzione per la media
+double Lista::getMedia(){
+	double sum = 0;
+	short c = 0;
+	for(Nodo* p = this->testa; p!=nullptr; p=p->succ){
+		sum += this->getSpesa(p);
+		c++;
+	}
+	return sum/c;
 }
 
 int main(){
 	fstream input("Comande.txt", fstream::in);
 	Lista l;
 	upload(l,input);
-	ordXCliente(l);
-	//l.rimuovi(25);
+	Nodo* p = l.getTesta();
+	//ordXCliente(l);
+	while(p){
+		p = l.ricerca(l.getMedia());
+		l.rimuovi(l.getMedia());
+	}
+	cout << l;
 }
