@@ -160,6 +160,7 @@ void Lista::inserisci(ListaC ls){
 
 // (PUNTO 1 e 2) funzione per carire i dati dal file sulla lista di liste (in modo organizzato)
 void upload(Lista& ls, fstream& file){
+	file.open("Comande.txt", fstream::in);
 	string s, c = "";
 	while(file){
 		file >> s;
@@ -172,6 +173,7 @@ void upload(Lista& ls, fstream& file){
 		ls.getTesta()->lista.inserisci(com);
 		if(file.eof()) break;
 	}
+	file.close();
 }
 
 // (PUNTO 3) funzione di ricerca del cliente per cognome
@@ -198,6 +200,7 @@ double Lista::getSpesa(Nodo* n){
 void ordXCliente(Lista& ls){
 	system("cls");
 	string s;
+	bool flag=true;
 	double sum = 0;
 	cout << "Inserisci nome cliente:\t";
 	cin >> s;
@@ -215,11 +218,12 @@ void ordXCliente(Lista& ls){
 	}
 	else{
 		cout << "Il cliente non e' stato trovato, scegliere tra questi:" << endl << endl;
-		cout << ls;
+		cout << ls << endl;
 		system("pause");
 		ordXCliente(ls);
+		flag=false;
 	}
-	cout << "Il totale speso da " << s << " e' di " << sum << " euro." << endl;
+	if(flag)cout << "Il totale speso da " << s << " e' di " << sum << " euro." << endl;
 }
 
 // (PUNTO 4) funzione di ricerca del cliente che ha speso meno di val
@@ -353,19 +357,20 @@ void ListaPizze::classifica(Lista& ls){
 }
 
 int main(){
-	fstream input("Comande.txt", fstream::in); // apro il file per leggere da esso
-	Lista l; // creo una lista (quella maggiore)
+	fstream input; // apro il file per leggere da esso
+	Lista l1,l2; // creo una lista (quella maggiore)
 	// PUNTO 1 e 2: carico i dati sulla lista
-	upload(l,input);
+	upload(l1,input);
+	upload(l2,input); // faccio una lista di copia così la classifica si fa sulla lista iniziale (con tutti i clienti)
 	// PUNTO 3: cerco le ordinazioni di un cliente, le stampo e calcolo il totale
-	ordXCliente(l);
+	ordXCliente(l1);
 	system("pause");
 	// PUNTO 4: elimino dalla lista i clienti che hanno speso poco ma salvo le loro ordinazioni su file
-	double media = l.getMedia();
-	download(l,media);
+	double media = l1.getMedia();
+	download(l1,media);
 	// PUNTO 5: creo una ListaPizze e avvio la funzione
 	ListaPizze ll;
-	ll.classifica(l);
+	ll.classifica(l2);
 	cout << "A proposito, le ordinazioni dei clienti che hanno speso meno di " << media << " sono state salvate su Comande_eliminate.txt";
 	
 	return 0;
