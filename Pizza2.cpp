@@ -259,7 +259,7 @@ void Lista::rimuovi(Nodo* n){
 
 // (PUNTO 4 BONUS) funzione per salvare su file i clienti che hanno speso meno della media
 void download(Lista& ls, double val){
-	fstream save("Comande_eliminate", fstream::out);
+	fstream save("Comande_eliminate.txt", fstream::out);
 	while(ls.ricerca(val)){
 		Nodo* n = ls.ricerca(val);
 		save << n->lista;
