@@ -14,7 +14,8 @@ Comunque, qua c'è la lista dei file, anzi, facciamo le cose per come si deve
 3. `Progetto1.pdf` vabbè qua c'è la consegna del casino da fare (a proposito, col **cazzo** che bastano 2 giorni per sta merda)
 4. `Comande.txt` qui ci sono le comande che devi usare per fare tutto il manicomio che ti chiede
 5. `Comande_eliminate.txt` questo è il file che si dovrebbe generare al punto 4 se tutto va bene
-6. `README.MD` si tratta di sto coso che sto scrivendo così perchè non ho un cazzo da fare, che bello il covid
+6. `.gitignore` è quello che fa ignorare a git i file che gli elenchi (*.exe significa che ignora tutti i .exe)
+7. `README.MD` si tratta di sto coso che sto scrivendo così perchè non ho un cazzo da fare, che bello il covid
 
 ## **ATTENZIONE**
 Tena accura quando lavori in scrittura con i file, tipo per il punto 4 perchè se mai ti dovessi arrisicare a mettere un inserimento su file in un loop che non ti accorgi essere infinito, te ne pentiresti...
