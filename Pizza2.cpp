@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
-#define DIM 59
 
 using namespace std;
 
